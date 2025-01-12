@@ -23,7 +23,7 @@ public class Main {
         settingsArray[1] = new GameSettings("Pac-Man 2", 25, -14, 8, new Color(255, 255, 153), new Color(100, 149, 247), new Color(255, 245, 238),
                 new Color(255, 228, 225), new Color(220, 20, 60), new Color(255, 105, 180), new Color(176, 234, 240), new Color(255, 140, 0));
         Random random = new Random();
-        GameSettings settings = settingsArray[random.nextInt(1)+1];
+        GameSettings settings = settingsArray[random.nextInt(1)];
         map.createMap();
         Pacman pacman = new Pacman(settings.getPacmanStartX(), settings.getPacmanStartY(), settings.getPacmanStartX(), settings.getPacmanStartY(), 0, 3, 3, 0);
 
@@ -37,12 +37,105 @@ public class Main {
         ghostArray.add(inky);
         ghostArray.add(clyde);
 
+        InputStream imageStream = Main.class.getResourceAsStream("images/cherry.jpeg");
+        Texture cherryTexture = new Texture();
+        try {
+            //проверяем, удалось ли загрузить InputStream
+            if (imageStream == null) {
+                //выбрасываем исключение IOException с сообщением об ошибке
+                throw new IOException("Image file not found.");
+            }
+            cherryTexture.loadFromStream(imageStream);
+        }
+    catch (IOException e) {
+        System.err.println("Error: " + e.getMessage());
+        return; // Завершаем программу, если изображение не загружено
+    }
+        Sprite cherryShape = new Sprite();
+        cherryShape.setTexture(cherryTexture);
+        cherryShape.setScale(0.1f, 0.1f);
+
+        imageStream = Main.class.getResourceAsStream("images/apple.jpeg");
+        Texture appleTexture = new Texture();
+        try {
+            if (imageStream == null) {
+                 throw new IOException("Image file not found.");
+            }
+            appleTexture.loadFromStream(imageStream);
+        }
+        catch (IOException e) {
+             System.err.println("Error: " + e.getMessage());
+            return; // Завершаем программу, если изображение не загружено
+        }
+        Sprite appleShape = new Sprite();
+        appleShape.setTexture(appleTexture);
+        appleShape.setScale(0.02f, 0.02f);
+
+        imageStream = Main.class.getResourceAsStream("images/pear.jpeg");
+        Texture pearTexture = new Texture();
+        try {
+            if (imageStream == null) {
+                throw new IOException("Image file not found.");
+            }
+            pearTexture.loadFromStream(imageStream);
+        }
+        catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+            return; // Завершаем программу, если изображение не загружено
+        }
+        Sprite pearShape = new Sprite();
+        pearShape.setTexture(pearTexture);
+        pearShape.setScale(0.1f, 0.1f);
+
+        imageStream = Main.class.getResourceAsStream("images/orange.jpeg");
+        Texture orangeTexture = new Texture();
+        try {
+            if (imageStream == null) {
+                throw new IOException("Image file not found.");
+            }
+            orangeTexture.loadFromStream(imageStream);
+        }
+        catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+            return; // Завершаем программу, если изображение не загружено
+        }
+        Sprite orangeShape = new Sprite();
+        orangeShape.setTexture(orangeTexture);
+        orangeShape.setScale(0.1f, 0.1f);
+
+        imageStream = Main.class.getResourceAsStream("images/watermelon.jpeg");
+        Texture watermelonTexture = new Texture();
+        try {
+            if (imageStream == null) {
+                throw new IOException("Image file not found.");
+            }
+            watermelonTexture.loadFromStream(imageStream);
+        }
+        catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+            return; // Завершаем программу, если изображение не загружено
+        }
+        Sprite watermelonShape = new Sprite();
+        watermelonShape.setTexture(watermelonTexture);
+        watermelonShape.setScale(0.03f, 0.03f);
+
+        //массив фруктов
+        Fruit[] fruitArray = new Fruit[5];
+        fruitArray[0] = new Fruit(20, cherryShape);
+        fruitArray[1] = new Fruit(30, appleShape);
+        fruitArray[2] = new Fruit(40, pearShape);
+        fruitArray[3] =  new Fruit(50, orangeShape);
+        fruitArray[4] = new Fruit(60,  watermelonShape);
+        int randFruit = 0;
+
         Font font = new Font();
-        String fontPath = "Unformital Medium.ttf"; // Замените на актуальный путь
+        String fontPath = "Unformital Medium.ttf";
         InputStream fontStream = Main.class.getResourceAsStream(fontPath);
 
         try {
+            //проверяем, удалось ли загрузить fontStream
             if (fontStream == null) {
+                //выбрасываем исключение IOException с сообщением об ошибке
                 throw new IOException("Font file not found.");
             }
             font.loadFromStream(fontStream);
@@ -84,13 +177,18 @@ public class Main {
                     window.close();
                 }
                 if (event.type == Event.Type.KEY_PRESSED && event.asKeyEvent().key == Keyboard.Key.RETURN) {
-                    game.resetGame(map, smallFood, bigFood, pacman, ghostArray, settings, resultText);
+                    game.resetGame(map, smallFood, bigFood, pacman, ghostArray, settings, resultText, fruitArray[0]);
                 }
             }
 
+            if (!fruitArray[0].getIsActive())
+            {
+                randFruit = random.nextInt(1)+1;
+            }
+
             window.clear(Color.BLACK);
-            map.mazePaint(settings, window, smallFood,
-                    bigFood);
+            fruitArray[randFruit].createFruit(settings, map, window, smallFood);
+            map.mazePaint(settings, window, smallFood, bigFood,  fruitArray[randFruit].getSprite());
 
             ResultWrapper wonOrLostResult = pacman.wonOrLost(smallFood, bigFood, resultText);
             if (wonOrLostResult.getResult() == 1) {
@@ -106,7 +204,7 @@ public class Main {
                 pacman.updateMaxPoints(pacman.getPoints());
 
             } else {
-                pacman.move(map, smallFood, bigFood);
+                pacman.move(map, smallFood, bigFood, fruitArray[randFruit]);
                 blinky.blinkyMove(pacman, map, settings, window);
                 pinky.pinkyMove(pacman, map, settings, window);
                 inky.inkyMove(pacman, map, blinky, settings, window);
@@ -118,8 +216,10 @@ public class Main {
                         pinky.setAll(13, 14, 0, 3, 3, settings.getPinkyColor());
                         inky.setAll(15, 14, 0, 3, 3, settings.getInkyColor());
                         clyde.setAll(17, 14, 0, 3, 3, settings.getClydeColor());
-                        map.setTile(pacman.getY(), pacman.getX(), ' ');
-                        map.setTile(settings.getPacmanStartY(), settings.getPacmanStartX(), 'P');
+                        Tile newTile = new Tile(' ');
+                        map.setTile(pacman.getY(), pacman.getX(), newTile);
+                        newTile = new Tile('P');
+                        map.setTile(settings.getPacmanStartY(), settings.getPacmanStartX(), newTile);
                         pacman.setX(settings.getPacmanStartX());
                         pacman.setY(settings.getPacmanStartY());
                         pacman.setNextX(settings.getPacmanStartX());

@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="jsfml-test-Dec02_2013">
+    <CLASSES>
+      <root url="file://jsfml-test-Dec02_2013" />
+      <root url="file://$PROJECT_DIR$/.idea/libraries/jsfml-test-Dec02_2013" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="file://jsfml-test-Dec02_2013/javadoc" />
+      <root url="file://$PROJECT_DIR$/.idea/libraries/jsfml-test-Dec02_2013/javadoc" />
+    </JAVADOC>
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/.idea/libraries/jsfml-test-Dec02_2013" recursive="false" />
+    <jarDirectory url="file://jsfml-test-Dec02_2013" recursive="false" />
+  </library>
+</component>
